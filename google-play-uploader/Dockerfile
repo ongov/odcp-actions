@@ -16,7 +16,7 @@ WORKDIR /app
 COPY upload.py .
 
 # Run the script with the passed arguments
-ENTRYPOINT ["python", "upload.py"]
+ENTRYPOINT ["python3", "upload.py"]
 
 # Pass inputs from action.yml to the Python script as command-line arguments
 CMD ["--service-account", "${{ inputs.service-account }}", "--bundle", "${{ inputs.bundle }}", "--package-name", "${{ inputs.package-name }}", "--timeout", "${{ inputs.timeout }}"]
