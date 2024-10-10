@@ -13,10 +13,10 @@ RUN pip install --no-cache google-auth google-auth-oauthlib google-auth-httplib2
 WORKDIR /app
 
 # Copy the Python script into the container
-COPY upload.py .
+COPY upload.py /app/upload.py
 
 # Run the script with the passed arguments
-ENTRYPOINT ["python3", "upload.py"]
+ENTRYPOINT ["python3", "/app/upload.py"]
 
 # Pass inputs from action.yml to the Python script as command-line arguments
 CMD ["--service-account", "${{ inputs.service-account }}", "--bundle", "${{ inputs.bundle }}", "--package-name", "${{ inputs.package-name }}", "--timeout", "${{ inputs.timeout }}"]
