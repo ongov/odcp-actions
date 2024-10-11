@@ -17,8 +17,8 @@ inputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.service-account }}
-    - ${{ inputs.bundle }}
-    - ${{ inputs.package-name }}
-    - ${{ inputs.timeout }}
+  env:
+    INPUT_SERVICE_ACCOUNT: ${{ inputs.service-account }}
+    INPUT_BUNDLE: ${{ inputs.bundle }}
+    INPUT_PACKAGE_NAME: ${{ inputs.package-name }}
+    INPUT_TIMEOUT: ${{ inputs.timeout }}
