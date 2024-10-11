@@ -1,8 +1,8 @@
 name: 'Upload to Service'
 description: 'Upload Android bundle files to Google Play'
 inputs:
-  service-account:
-    description: 'Service account JSON'
+  service-account-file:
+    description: 'Path to the service account JSON file'
     required: true
   bundle:
     description: 'Path to the app bundle file (.aab)'
@@ -18,7 +18,7 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   env:
-    INPUT_SERVICE_ACCOUNT: ${{ inputs.service_account }}
+    INPUT_SERVICE_ACCOUNT_FILE: ${{ inputs.service-account-file }}
     INPUT_BUNDLE: ${{ inputs.bundle }}
-    INPUT_PACKAGE_NAME: ${{ inputs.package_name }}
+    INPUT_PACKAGE_NAME: ${{ inputs.package-name }}
     INPUT_TIMEOUT: ${{ inputs.timeout }}
