@@ -5,6 +5,9 @@ from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+import sys
+import shutil
+import os
 import time
 
 # Main script logic
@@ -20,14 +23,24 @@ def main():
     package_name = sys.argv[3]
     timeout = int(sys.argv[4]) if len(sys.argv) > 4 else 120  # Default timeout is 120 seconds if not provided
 
-    # Validate the existence of the service account file
-    if not service_account_file_path or not os.path.exists(service_account_file_path):
-        print(f"Error: Service account file '{service_account_file_path}' not found.")
-        exit(1)
 
+    # Ensure the /assets directory exists
+    os.makedirs('/assets', exist_ok=True)
+
+    # Copy the service account file to /assets/service-account.json
+    shutil.copyfile(service_account_file_path, '/assets/service-account.json')
+    shutil.copyfile(aab_file_path, '/assets/app-release.aab')
+
+    # Validate the existence of the service account file
+    if not os.path.exists('/assets/service-account.json'):
+        print(f"Error: Service account file not found.")
+        exit(1)
+    if not os.path.exists('/assets/app-release.aab'):
+        print(f"Error: App bundle file not found.")
+        exit(1)
     # Read service account JSON from the file
     try:
-        with open(service_account_file_path, 'r') as f:
+        with open("/assets/service-account.json", 'r') as f:
             service_account_info = json.load(f)
     except json.JSONDecodeError:
         print("Error: Invalid service account JSON")
@@ -71,9 +84,9 @@ def main():
         exit(1)
 
     # Step 4: Upload the AAB file
-    print(f"Uploading AAB file from {aab_file_path} as draft...")
+    print(f"Uploading AAB file from /assets/app-release.aab as draft...")
     try:
-        media = MediaFileUpload(aab_file_path, mimetype='application/octet-stream')
+        media = MediaFileUpload("/assets/app-release.aab", mimetype='application/octet-stream')
         aab_upload_request = service.edits().bundles().upload(
             editId=edit_id,
             packageName=package_name,
