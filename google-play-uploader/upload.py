@@ -1,4 +1,4 @@
-import os
+import sys
 import json
 import google.auth
 from google.auth.transport.requests import Request
@@ -9,11 +9,16 @@ import time
 
 # Main script logic
 def main():
-    # Extract environment variables
-    service_account_file_path = os.getenv('INPUT_SERVICE_ACCOUNT_FILE')
-    aab_file_path = os.getenv('INPUT_BUNDLE')
-    package_name = os.getenv('INPUT_PACKAGE_NAME')
-    timeout = int(os.getenv('INPUT_TIMEOUT', 120))  # Default timeout is 120 seconds if not provided
+    # Extract arguments from the command-line
+    if len(sys.argv) < 4:
+        print("Error: Missing required arguments.")
+        print("Usage: python upload.py <service-account-file> <bundle> <package-name> [<timeout>]")
+        exit(1)
+
+    service_account_file_path = sys.argv[1]
+    aab_file_path = sys.argv[2]
+    package_name = sys.argv[3]
+    timeout = int(sys.argv[4]) if len(sys.argv) > 4 else 120  # Default timeout is 120 seconds if not provided
 
     # Validate the existence of the service account file
     if not service_account_file_path or not os.path.exists(service_account_file_path):
