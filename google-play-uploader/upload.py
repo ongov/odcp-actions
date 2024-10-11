@@ -1,41 +1,34 @@
-import argparse
+import os
 import json
 import google.auth
 from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-import time
-
-# Function to parse command line arguments
-def parse_args():
-    parser = argparse.ArgumentParser(description='Upload an AAB file to Google Play.')
-
-    # Define the arguments
-    parser.add_argument('--service-account', required=True, type=str,
-                        help='Service account JSON credentials as a string.')
-    parser.add_argument('--bundle', required=True, type=str,
-                        help='Path to the AAB file to upload.')
-    parser.add_argument('--package-name', required=True, type=str,
-                        help='Package name of the Android app.')
-    parser.add_argument('--timeout', required=False, type=int, default=120,
-                        help='Timeout in seconds for HTTP requests (default is 120 seconds).')
-
-    return parser.parse_args()
+import sys
 
 # Main script logic
 def main():
-    # Parse the command line arguments
-    args = parse_args()
+    # Retrieve parameters from environment variables
+    service_account_json = os.getenv('INPUT_SERVICE-ACCOUNT')
+    aab_file_path = os.getenv('INPUT_BUNDLE')
+    package_name = os.getenv('INPUT_PACKAGE-NAME')
+    timeout = int(os.getenv('INPUT_TIMEOUT', 300))  # Default timeout to 120 seconds if not provided
 
-    # Extract command-line arguments
-    service_account_info = json.loads(args.service_account)
-    aab_file_path = args.bundle
-    package_name = args.package_name
-    timeout = args.timeout
+    # Check if required environment variables are present
+    if not service_account_json or not aab_file_path or not package_name:
+        print("Error: Missing required environment variables.")
+        sys.exit(1)
+
+    # Validate JSON input for service account
+    try:
+        service_account_info = json.loads(service_account_json)
+    except json.JSONDecodeError:
+        print("Error: Invalid service account JSON")
+        sys.exit(1)
 
     print("Starting Google Play AAB upload script...")
-    
+
     # Step 1: Authenticate using the service account
     print("Authenticating using service account credentials...")
     try:
@@ -46,7 +39,7 @@ def main():
         print("Authentication successful.")
     except Exception as e:
         print(f"Failed to authenticate: {e}")
-        exit(1)
+        sys.exit(1)
 
     # Step 2: Build the Google Play API service
     print("Building Google Play API client...")
@@ -55,7 +48,7 @@ def main():
         print("Google Play API client built successfully.")
     except Exception as e:
         print(f"Failed to build Google Play API client: {e}")
-        exit(1)
+        sys.exit(1)
 
     # Step 3: Start a new edit transaction
     print("Starting a new edit transaction...")
@@ -66,7 +59,7 @@ def main():
         print(f"Edit transaction started successfully. Edit ID: {edit_id}")
     except Exception as e:
         print(f"Failed to start edit transaction: {e}")
-        exit(1)
+        sys.exit(1)
 
     # Step 4: Upload the AAB file
     print(f"Uploading AAB file from {aab_file_path} as draft...")
@@ -82,7 +75,7 @@ def main():
         print(f"AAB uploaded successfully. Version code: {version_code}")
     except Exception as e:
         print(f"Failed to upload AAB: {e}")
-        exit(1)
+        sys.exit(1)
 
     # Step 5: Assign the AAB to the internal track as a draft
     print("Assigning AAB to the internal track as draft...")
@@ -101,7 +94,7 @@ def main():
         print("AAB assigned to internal track successfully.")
     except Exception as e:
         print(f"Failed to assign AAB to internal track: {e}")
-        exit(1)
+        sys.exit(1)
 
     # Step 6: Commit the transaction
     print("Committing the transaction...")
@@ -114,7 +107,7 @@ def main():
         print("Transaction committed successfully.")
     except Exception as e:
         print(f"Failed to commit the transaction: {e}")
-        exit(1)
+        sys.exit(1)
 
     print("AAB upload and track assignment completed successfully.")
 
