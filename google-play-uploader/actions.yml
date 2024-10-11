@@ -18,7 +18,7 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.service-account-file }}
-    - ${{ inputs.bundle }}
+    - ${{ github.workspace }}/${{ inputs.service-account-file }} # Full path to the service account JSON file
+    - ${{ github.workspace }}/${{ inputs.bundle }}
     - ${{ inputs.package-name }}
     - ${{ inputs.timeout }}
