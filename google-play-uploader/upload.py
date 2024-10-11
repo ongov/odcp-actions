@@ -10,9 +10,9 @@ import sys
 # Main script logic
 def main():
     # Retrieve parameters from environment variables
-    service_account_json = os.getenv('INPUT_SERVICE-ACCOUNT')
+    service_account_json = os.getenv('INPUT_SERVICE_ACCOUNT')
     aab_file_path = os.getenv('INPUT_BUNDLE')
-    package_name = os.getenv('INPUT_PACKAGE-NAME')
+    package_name = os.getenv('INPUT_PACKAGE_NAME')
     timeout = int(os.getenv('INPUT_TIMEOUT', 300))  # Default timeout to 120 seconds if not provided
 
     # Check if required environment variables are present
